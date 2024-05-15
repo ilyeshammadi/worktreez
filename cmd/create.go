@@ -19,7 +19,7 @@ func Create() *cli.Command {
 				Required: true,
 				Action: func(ctx *cli.Context, s string) error {
 					if !utils.IsValidPath(s) {
-						cli.Exit(fmt.Sprintf("Invalid repos_path: %s", s), 1)
+						return cli.Exit(fmt.Sprintf("Invalid repos_path: %s", s), 1)
 					}
 					return nil
 				},
@@ -30,7 +30,7 @@ func Create() *cli.Command {
 				Required: true,
 				Action: func(ctx *cli.Context, s string) error {
 					if !utils.IsValidPath(s) {
-						cli.Exit(fmt.Sprintf("Invalid dest_path: %s", s), 1)
+						return cli.Exit(fmt.Sprintf("Invalid dest_path: %s", s), 1)
 					}
 					return nil
 				},
