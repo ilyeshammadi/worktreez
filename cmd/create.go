@@ -2,7 +2,9 @@ package cmd
 
 import (
 	"fmt"
-	"worktreez/utils"
+	"log"
+	"os/exec"
+	"path/filepath"
 
 	"github.com/urfave/cli/v2"
 )
@@ -13,55 +15,41 @@ func Create() *cli.Command {
 		Description: "Create a new set of worktrees for the selected repos",
 		Aliases:     []string{"c"},
 		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:     "repos_path",
-				Aliases:  []string{"r"},
-				Required: true,
-				Action: func(ctx *cli.Context, s string) error {
-					if !utils.IsValidPath(s) {
-						return cli.Exit(fmt.Sprintf("Invalid repos_path: %s", s), 1)
-					}
-					return nil
-				},
-			},
-			&cli.StringFlag{
-				Name:     "dest_path",
-				Aliases:  []string{"d"},
-				Required: true,
-				Action: func(ctx *cli.Context, s string) error {
-					if !utils.IsValidPath(s) {
-						return cli.Exit(fmt.Sprintf("Invalid dest_path: %s", s), 1)
-					}
-					return nil
-				},
-			},
-			&cli.StringFlag{
-				Name:     "branch_name",
-				Aliases:  []string{"b"},
-				Required: true,
-				Action: func(ctx *cli.Context, s string) error {
-					if !utils.IsValidBranchName(s) {
-						return cli.Exit(fmt.Sprintf("Invalid branch name %s", s), 1)
-					}
-					return nil
-				},
-			},
-			&cli.StringSliceFlag{
-				Name:     "repo_name",
-				Aliases:  []string{"n"},
-				Required: true,
-				Action: func(ctx *cli.Context, s []string) error {
-					reposPath := ctx.String("repos_path")
-					for _, elem := range s {
-						if !utils.IsValidGitRepository(reposPath, elem) {
-							return cli.Exit(fmt.Sprintf("Invalid repository %s", elem), 1)
-						}
-					}
-					return nil
-				},
-			},
+			GetReposFlag(),
+			GetDestPathFlag(),
+			GetBranchNameFlag(),
+			GetRepoNamesFlag(),
 		},
 		Action: func(ctx *cli.Context) error {
+			reposPath := ctx.String("repos_path")
+			destPath := ctx.String("dest_path")
+			branchName := ctx.String("branch_name")
+
+			for _, repoName := range ctx.StringSlice("repo_name") {
+				repoPath, _ := filepath.Abs(filepath.Join(reposPath, repoName))
+				repoPathGit, _ := filepath.Abs(filepath.Join(repoPath, ".git"))
+				destRepoPath, _ := filepath.Abs(filepath.Join(destPath, branchName, repoName))
+
+				cmd := exec.Command(
+					"git",
+					"--git-dir",
+					repoPathGit,
+					"--work-tree",
+					repoPath,
+					"worktree",
+					"add",
+					"-B",
+					branchName,
+					destRepoPath,
+				)
+				output, err := cmd.CombinedOutput()
+				if err != nil {
+					errMessage := fmt.Sprintf("Command execution failed: %v\nOutput: %s", err, string(output))
+					return cli.Exit(errMessage, 1)
+				}
+			}
+
+			// Create a worktree for each repo name in the tree folder
 			return nil
 		},
 	}

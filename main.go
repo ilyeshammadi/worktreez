@@ -4,8 +4,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/urfave/cli/v2"
 	"worktreez/cmd"
+
+	"github.com/urfave/cli/v2"
 )
 
 func main() {
@@ -21,6 +22,7 @@ func main() {
 		EnableBashCompletion: true,
 		Commands: []*cli.Command{
 			cmd.Create(),
+			cmd.Status(),
 		},
 	}
 
