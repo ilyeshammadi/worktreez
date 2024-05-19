@@ -23,6 +23,7 @@ func main() {
 		Commands: []*cli.Command{
 			cmd.Create(),
 			cmd.Delete(),
+			cmd.List(),
 		},
 	}
 

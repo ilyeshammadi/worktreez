@@ -42,11 +42,11 @@ func GetDestPathFlag() *cli.StringFlag {
 	}
 }
 
-func GetBranchNameFlag() *cli.StringFlag {
+func GetBranchNameFlag(required bool) *cli.StringFlag {
 	return &cli.StringFlag{
 		Name:     "branch_name",
 		Aliases:  []string{"b"},
-		Required: true,
+		Required: required,
 		Action: func(ctx *cli.Context, s string) error {
 			if !utils.IsValidBranchName(s) {
 				return cli.Exit(fmt.Sprintf("Invalid branch name %s", s), 1)

@@ -17,7 +17,7 @@ func Create() *cli.Command {
 			DryRunFlag(),
 			GetReposFlag(),
 			GetDestPathFlag(),
-			GetBranchNameFlag(),
+			GetBranchNameFlag(true),
 			GetRepoNamesFlag(),
 		},
 		Action: func(ctx *cli.Context) error {

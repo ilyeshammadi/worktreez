@@ -18,7 +18,7 @@ func Delete() *cli.Command {
 			DryRunFlag(),
 			GetReposFlag(),
 			GetDestPathFlag(),
-			GetBranchNameFlag(),
+			GetBranchNameFlag(true),
 			&cli.BoolFlag{
 				Name:     "force",
 				Required: false,
