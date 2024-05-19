@@ -7,6 +7,13 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+func DryRunFlag() *cli.BoolFlag {
+	return &cli.BoolFlag{
+		Name:     "dry_run",
+		Required: false,
+	}
+}
+
 func GetReposFlag() *cli.StringFlag {
 	return &cli.StringFlag{
 		Name:     "repos_path",

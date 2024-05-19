@@ -22,7 +22,7 @@ func main() {
 		EnableBashCompletion: true,
 		Commands: []*cli.Command{
 			cmd.Create(),
-			cmd.Status(),
+			cmd.Delete(),
 		},
 	}
 
