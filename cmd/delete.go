@@ -1,9 +1,10 @@
 package cmd
 
 import (
-	"fmt"
+	"os"
 	"os/exec"
 	"path/filepath"
+	"worktreez/utils"
 
 	"github.com/urfave/cli/v2"
 )
@@ -18,7 +19,6 @@ func Delete() *cli.Command {
 			GetReposFlag(),
 			GetDestPathFlag(),
 			GetBranchNameFlag(),
-			GetRepoNamesFlag(),
 			&cli.BoolFlag{
 				Name:     "force",
 				Required: false,
@@ -29,123 +29,36 @@ func Delete() *cli.Command {
 			destPath := ctx.String("dest_path")
 			branchName := ctx.String("branch_name")
 
-			for _, repoName := range ctx.StringSlice("repo_name") {
-				repoPath, _ := filepath.Abs(filepath.Join(reposPath, repoName))
-				destRepoPath, _ := filepath.Abs(filepath.Join(destPath, branchName, repoName))
+			branchFodler, _ := filepath.Abs(filepath.Join(destPath, branchName))
 
-				if err := removeWorktree(ctx, repoPath, destRepoPath); err != nil {
-					return err
-				}
-
-				if err := removeBranch(ctx, repoPath, branchName); err != nil {
-					return err
-				}
-
-				if err := removeBranchNameFolder(ctx); err != nil {
-					return err
-				}
-
-				if err := prune(ctx, repoPath); err != nil {
-					return err
-				}
+			// Make a copy of the repo names in the branch folder
+			repoNames, err := os.ReadDir(branchFodler)
+			if err != nil {
+				return cli.Exit(err, 1)
 			}
+
+			// Delete the branch folder
+			deleteBranchCmd := exec.Command(
+				"rm",
+				"-rf",
+				branchFodler,
+			)
+			utils.RunCommand(deleteBranchCmd, ctx.Bool("dry_run"))
+
+			// Prune each folder in the repos path
+			for _, repoName := range repoNames {
+				repoPath, _ := filepath.Abs(filepath.Join(reposPath, repoName.Name()))
+				pruneCmd := exec.Command(
+					"git",
+					"-C",
+					repoPath,
+					"worktree",
+					"prune",
+				)
+				utils.RunCommand(pruneCmd, ctx.Bool("dry_run"))
+			}
+
 			return nil
 		},
 	}
-}
-
-func removeWorktree(ctx *cli.Context, repoPath, destRepoPath string) cli.ExitCoder {
-	// Remove work tree
-	removeCmd := exec.Command(
-		"git",
-		"-C",
-		repoPath,
-		"worktree",
-		"remove",
-		destRepoPath,
-	)
-	if ctx.Bool("dry_run") {
-		fmt.Println(removeCmd.String())
-	} else {
-		output, err := removeCmd.CombinedOutput()
-		if err != nil {
-			errMessage := fmt.Sprintf("Command execution failed: %v\nOutput: %s", err, string(output))
-			return cli.Exit(errMessage, 1)
-		}
-	}
-	return nil
-}
-
-func prune(ctx *cli.Context, repoPath string) cli.ExitCoder {
-	// Prune work tree
-	pruneCmd := exec.Command(
-		"git",
-		"-C",
-		repoPath,
-		"worktree",
-		"prune",
-	)
-	if ctx.Bool("dry_run") {
-		fmt.Println(pruneCmd.String())
-	} else {
-		output, err := pruneCmd.CombinedOutput()
-		if err != nil {
-			errMessage := fmt.Sprintf("Command execution failed: %v\nOutput: %s", err, string(output))
-			return cli.Exit(errMessage, 1)
-		}
-	}
-	return nil
-}
-
-func removeBranch(ctx *cli.Context, repoPath, branchName string) cli.ExitCoder {
-	cmdArgs := []string{
-		"-C",
-		repoPath,
-		"branch",
-		"-D",
-		branchName,
-	}
-
-	if ctx.Bool("force") {
-		cmdArgs = append(cmdArgs, "--force")
-	}
-
-	cmd := exec.Command(
-		"git",
-		cmdArgs...,
-	)
-
-	if ctx.Bool("dry_run") {
-		fmt.Println(cmd.String())
-	} else {
-		output, err := cmd.CombinedOutput()
-		if err != nil {
-			errMessage := fmt.Sprintf("Command execution failed: %v\nOutput: %s", err, string(output))
-			return cli.Exit(errMessage, 1)
-		}
-	}
-	return nil
-}
-
-func removeBranchNameFolder(ctx *cli.Context) cli.ExitCoder {
-	folderName, err := filepath.Abs(filepath.Join(ctx.String("dest_path"), ctx.String("branch_name")))
-	if err != nil {
-		errMessage := fmt.Sprintf("Incorrect path to foler %s", folderName)
-		return cli.Exit(errMessage, 1)
-	}
-	cmd := exec.Command(
-		"rm",
-		"-rf",
-		folderName,
-	)
-	if ctx.Bool("dry_run") {
-		fmt.Println(cmd.String())
-	} else {
-		output, err := cmd.CombinedOutput()
-		if err != nil {
-			errMessage := fmt.Sprintf("Command execution failed: %v\nOutput: %s", err, string(output))
-			return cli.Exit(errMessage, 1)
-		}
-	}
-	return nil
 }
