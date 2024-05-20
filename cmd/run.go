@@ -13,7 +13,8 @@ import (
 func Run() *cli.Command {
 	return &cli.Command{
 		Name:        "run",
-		Description: "Run a shell command against the specified branch/repo",
+		UsageText:   "worktreez run -d dest_folder -b BRANCH -- git status",
+		Description: "Run a shell command against the specified branch/repository",
 		Aliases:     []string{"r"},
 		Flags: []cli.Flag{
 			GetDestPathFlag(),
