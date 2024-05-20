@@ -18,10 +18,10 @@ func Create() *cli.Command {
 			GetReposFlag(),
 			GetDestPathFlag(),
 			GetBranchNameFlag(true),
-			GetRepoNamesFlag(),
+			GetRepoNamesFlag(true),
 		},
 		Action: func(ctx *cli.Context) error {
-				reposPath := ctx.String("repos_path")
+			reposPath := ctx.String("repos_path")
 			destPath := ctx.String("dest_path")
 			branchName := ctx.String("branch_name")
 

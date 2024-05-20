@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"path/filepath"
 	"worktreez/utils"
 
 	"github.com/urfave/cli/v2"
@@ -56,15 +57,31 @@ func GetBranchNameFlag(required bool) *cli.StringFlag {
 	}
 }
 
-func GetRepoNamesFlag() *cli.StringSliceFlag {
+func GetRepoNamesFlag(required bool) *cli.StringSliceFlag {
 	return &cli.StringSliceFlag{
 		Name:     "repo_name",
 		Aliases:  []string{"n"},
-		Required: true,
+		Required: required,
 		Action: func(ctx *cli.Context, s []string) error {
 			reposPath := ctx.String("repos_path")
 			for _, elem := range s {
 				if !utils.IsValidGitRepository(reposPath, elem) {
+					return cli.Exit(fmt.Sprintf("Invalid repository %s", elem), 1)
+				}
+			}
+			return nil
+		},
+	}
+}
+
+func GetDestRepoNamesFlag() *cli.StringSliceFlag {
+	return &cli.StringSliceFlag{
+		Name:    "repo_name",
+		Aliases: []string{"n"},
+		Action: func(ctx *cli.Context, s []string) error {
+			destPath := filepath.Join(ctx.String("dest_path"), ctx.String("branch_name"))
+			for _, elem := range s {
+				if !utils.IsValidGitRepository(destPath, elem) {
 					return cli.Exit(fmt.Sprintf("Invalid repository %s", elem), 1)
 				}
 			}

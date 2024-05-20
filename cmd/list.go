@@ -16,10 +16,6 @@ func List() *cli.Command {
 		Flags: []cli.Flag{
 			GetDestPathFlag(),
 			GetBranchNameFlag(false),
-			&cli.BoolFlag{
-				Name:     "force",
-				Required: false,
-			},
 		},
 		Action: func(ctx *cli.Context) error {
 			destPath := ctx.String("dest_path")

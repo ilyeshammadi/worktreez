@@ -19,10 +19,6 @@ func Delete() *cli.Command {
 			GetReposFlag(),
 			GetDestPathFlag(),
 			GetBranchNameFlag(true),
-			&cli.BoolFlag{
-				Name:     "force",
-				Required: false,
-			},
 		},
 		Action: func(ctx *cli.Context) error {
 			reposPath := ctx.String("repos_path")

@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"os"
-
 	"worktreez/cmd"
 
 	"github.com/urfave/cli/v2"
@@ -24,6 +23,7 @@ func main() {
 			cmd.Create(),
 			cmd.Delete(),
 			cmd.List(),
+			cmd.Run(),
 		},
 	}
 
