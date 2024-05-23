@@ -17,13 +17,15 @@ func main() {
 			},
 		},
 		Name:                 "worktreez",
-		Usage:                "hammadiilyesahmed@gmail.com",
 		EnableBashCompletion: true,
 		Commands: []*cli.Command{
+			// TODO: Init command to setup the default profile
+			// TODO: Profile command to manage non default profile by name
 			cmd.Create(),
 			cmd.Delete(),
-			cmd.List(),
+			cmd.List(), // TODO: Fix the CD isch issue
 			cmd.Run(),
+			// TODO: Add a new command to append new repos to existing worktree branches
 		},
 	}
 
