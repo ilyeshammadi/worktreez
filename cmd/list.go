@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"worktreez/utils"
 
 	"github.com/urfave/cli/v2"
 )
@@ -27,22 +28,15 @@ func List() *cli.Command {
 				return cli.Exit(err, 1)
 			}
 
+			fmt.Printf("%s%s%s Uncommited changes\n", utils.ColorRed, utils.UncommitedSymbol, utils.ColorReset)
+			fmt.Println()
 			for _, branchName := range branches {
 				if selectedBranchName != "" && selectedBranchName != branchName.Name() {
 					continue
 				}
-				fmt.Println("Branch:", branchName.Name())
-
 				branchFodler, _ := filepath.Abs(filepath.Join(destPath, branchName.Name()))
-				repoNames, err := os.ReadDir(branchFodler)
+				utils.PrintBranch(branchFodler)
 
-				for _, repoName := range repoNames {
-					fmt.Println(repoName.Name())
-				}
-
-				if err != nil {
-					return cli.Exit(err, 1)
-				}
 			}
 
 			return nil
