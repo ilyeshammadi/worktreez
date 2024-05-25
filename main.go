@@ -23,9 +23,8 @@ func main() {
 			// TODO: Profile command to manage non default profile by name
 			cmd.Create(),
 			cmd.Delete(),
-			cmd.List(), // TODO: Fix the CD isch issue
+			cmd.List(),
 			cmd.Run(),
-			// TODO: Add a new command to append new repos to existing worktree branches
 		},
 	}
 

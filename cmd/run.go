@@ -45,10 +45,8 @@ func Run() *cli.Command {
 				repoPath, _ := filepath.Abs(filepath.Join(destPath, branchName, repoName.Name()))
 				fmt.Println(repoPath)
 
-				cdCmd := exec.Command("cd", repoPath)
-				utils.RunCommandWithOutput(cdCmd, ctx.Bool("dry_run"))
-
 				cmd := exec.Command(ctx.Args().First(), ctx.Args().Tail()...)
+				cmd.Dir = repoPath
 				utils.RunCommandWithOutput(cmd, ctx.Bool("dry_run"))
 			}
 
