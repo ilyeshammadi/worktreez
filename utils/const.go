@@ -1,7 +1,6 @@
 package utils
 
 const (
-	EnableIcons      = true
 	UncommitedSymbol = "[+]"
 	ColorReset       = "\033[0m"
 	ColorRed         = "\033[31m"

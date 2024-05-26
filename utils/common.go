@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"worktreez/config"
 
 	"github.com/urfave/cli/v2"
 )
@@ -43,11 +44,10 @@ func CheckIn(value string, values []string) bool {
 }
 
 func GetIcon(icon string) string {
-	if EnableIcons {
+	if config.GlobalConfig.WithIcons {
 		return icon
-	} else {
-		return ""
 	}
+	return ""
 }
 
 func PrintBranch(branchDir string) {

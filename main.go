@@ -4,11 +4,13 @@ import (
 	"log"
 	"os"
 	"worktreez/cmd"
+	"worktreez/config"
 
 	"github.com/urfave/cli/v2"
 )
 
 func main() {
+	config.SetGlobalConfig()
 	app := &cli.App{
 		Authors: []*cli.Author{
 			{
@@ -18,6 +20,7 @@ func main() {
 		},
 		Name:                 "worktreez",
 		EnableBashCompletion: true,
+		Version:              "0.1.0",
 		Commands: []*cli.Command{
 			cmd.Create(),
 			cmd.Delete(),
