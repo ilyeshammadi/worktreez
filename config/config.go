@@ -10,16 +10,6 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type Profile struct {
-	RepositoriesPath string `yaml:"repositories_path"`
-	WorktreesPath    string `yaml:"worktrees_path"`
-}
-
-type Config struct {
-	WithIcons bool               `yaml:"icons"`
-	Profiles  map[string]Profile `yaml:"profiles"`
-}
-
 var GlobalConfig Config
 
 func SetGlobalConfig() {
@@ -32,12 +22,15 @@ func SetGlobalConfig() {
 	configPath := filepath.Join(usr.HomeDir, ".config", "worktreez", "config.yaml")
 	yamlFile, err := os.ReadFile(configPath)
 	if err != nil {
-		log.Fatalf("Error: %v", err)
 		return
 	}
 	err = yaml.Unmarshal(yamlFile, &GlobalConfig)
 	if err != nil {
 		log.Fatalf("Error unmarshaling YAML: %v", err)
 	}
-	fmt.Println(GlobalConfig)
+	GlobalConfig.Setup()
+	defaultProfile, ok := GlobalConfig.Profiles["default"]
+	if ok {
+		fmt.Println(defaultProfile)
+	}
 }
